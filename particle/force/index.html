@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      font-size: 0;
+    }
+
+    .control {
+      position: fixed;
+      top: 0;
+      left: 0;
+      font-size: 14px;
+      color: white
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="control">
+    <table>
+      <tbody>
+        <tr>
+          <th>postion x</th>
+          <td>
+            <input type="range">
+          </td>
+        </tr>
+        <tr>
+          <th>position y</th>
+          <td>
+            <input type="range">
+          </td>
+        </tr>
+        <tr>
+          <th>velocity</th>
+          <td>
+            <input type="range">
+          </td>
+        </tr>
+        <tr>
+          <th>radius</th>
+          <td>
+            0 <input type="range" id="radius" min="0" max="100" value="5">100<br>
+            <span id="radius-value" class="values">5</span>
+          </td>
+        </tr>
+        <tr>
+          <th>life time</th>
+          <td>
+            0 <input type="range" id="life" min="0" max="500" value="255">500<br>
+            <span id="life-value" class="values">255</span>
+          </td>
+        </tr>
+        <tr>
+          <th>color</th>
+          <td>
+            <input type="color" value="#ffffff" id="color">
+            <span id="color-value" class="values">#ffffff</span>
+          </td>
+        </tr>
+        <tr>
+          <th>fade</th>
+          <td>
+            <input type="checkbox" checked id="fade">
+            <span id="fade-value" class="values">true</span>
+          </td>
+        </tr>
+        <tr>
+          <th>gravity</th>
+          <td>
+            <input type="checkbox" id="gravity">
+            <span id="gravity-value" class="values">false</span>
+          </td>
+        </tr>
+        <tr>
+          <th>wind</th>
+          <td>
+            <input type="checkbox" id="wind">
+            <span id="wind-value" class="values">false</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script type="module" src="./index.js"></script>
+  <script>
+    (function () {
+      const radius = document.getElementById('radius');
+      radius.addEventListener('change', (event) => {
+        document.getElementById('radius-value').innerText = state.radius = radius.value;
+      });
+
+      const life = document.getElementById('life');
+      life.addEventListener('change', (event) => {
+        document.getElementById('life-value').innerText = state.life = life.value;
+      });
+
+      const color = document.getElementById('color');
+      color.addEventListener('change', (event) => {
+        document.getElementById('color-value').innerText = state.color = color.value;
+      });
+
+      const fade = document.getElementById('fade');
+      fade.addEventListener('change', (event) => {
+        document.getElementById('fade-value').innerText = state.fade = fade.checked;
+      });
+
+      const gravity = document.getElementById('gravity');
+      gravity.addEventListener('change', (event) => {
+        document.getElementById('gravity-value').innerText = state.gravity = gravity.checked;
+      });
+
+      const wind = document.getElementById('wind');
+      wind.addEventListener('change', (event) => {
+        document.getElementById('wind-value').innerText = state.wind = wind.checked;
+      });
+    })();
+  </script>
+</body>
+
+</html>
