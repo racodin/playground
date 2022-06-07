@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Emoji translation demo</title>
+  <link href="emoji.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+  <h2>Live translation</h2>
+
+  <p>Input:</p>
+  <input id="input" style="width: 400px; height: 30px" onkeyup="go()" onchange="go()" value="foo :heart: bar :cinema: baz">
+  
+  <p>Styled output:</p>
+  <div id="out3" style="width: 400px; min-height: 150px; background-color: #eee; padding: 4px;"></div>
+  
+  <p>HTML output:</p>
+  <div id="out4" style="width: 400px; min-height: 150px; background-color: #eee; padding: 4px;"></div>
+  
+  <hr />
+
+  <script src="emoji.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var emoji = new EmojiConvertor();
+    var auto_mode = emoji.replace_mode;
+    // emoji.img_set = 'apple';
+    // emoji.img_sets.apple.path = './emoji-data/img-apple-64/';
+    // emoji.img_sets.apple.sheet = './emoji-data/img-apple-sheet-64.png';
+    // emoji.replace_mode = auto_mode;
+    // emoji.text_mode = false;
+
+    emoji.replace_mode = 'unified';
+    
+    function go(){
+      var text = document.getElementById('input').value;
+      var out = emoji.replace_colons(text);
+
+      document.getElementById('input').value = 
+      document.getElementById('out3').innerHTML = 
+      document.getElementById('out4').innerText = 
+      document.getElementById('out4').textContent = out;
+    }
+    go();
+  </script>
+</body>
+</html>

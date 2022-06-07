@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!-- <script>
+    // 옵저버 객체를 작성합니다.
+    var observer = {
+
+      // 각 모듈에서 등록할 핸들러들을 담아둘 내부 변수를 선언합니다.
+      handlers: {},
+
+      // 상태 변화 이벤트가 발생하면 실행될 이벤트를 등록하는 함수를 작성합니다.
+      // 핸들러 등록시 context를 함께 전달받아
+      // 내부에서 this를 사용시 적절한 컨텍스트에서 실행될 수 있도록 합니다.
+      register: function (eventName, handler, context) {
+        // 해당 이벤트로 기존에 등록된 이벤트들이 있는지 확인합니다.
+        var handlerArray = this.handlers[eventName];
+        if (undefined === handlerArray) {
+            // 신규 이벤트라면 새로운 배열을 할당합니다.
+            // 핸들러를 바로 넣지 않고 배열을 할당하는 이유는
+            // 한 이벤트에 여러개의 핸들러를 등록할 수 있도록 하기 위함입니다.
+            handlerArray = this.handlers[eventName] = [];
+        }
+
+        // 전달받은 핸들러와 컨텍스트를 해당 이벤트의 핸들러배열에 추가합니다.
+        handlerArray.push({
+          handler: handler,
+          context: context
+        });
+        console.log(this.handlers);
+      },
+
+      // 등록된 핸들러를 해제하는 함수를 작성합니다.
+      unregister: function (eventName, handler, context) {
+        var handlerArray = this.handlers[eventName];
+        if (undefined === handlerArray)
+          return ;
+
+        // 삭제할 핸들러와 컨텍스트를 배열에서 찾습니다.    
+        for (var hidx = 0; hidx < handlerArray.length; hidx++) {
+          var currentHandler = handlerArray[hidx];
+
+          // 찾았다면 배열에서 삭제하고 함수를 종료합니다.
+          if (handler === currentHandler['handler']
+          && context === currentHandler['context']) {
+            handlerArray.splice(hidx, 1);
+            return ;
+          }
+        }
+      },
+
+      // 특정 상태가 변했을때 이벤트를 통보할 함수를 작성합니다.
+      notify: function (eventName, data) {
+        console.log("this.handlers:", this.handlers);
+        // ​통보된 이벤트에 등록된 핸들러가 있는지 확인합니다.
+        var handlerArray = this.handlers[eventName];
+        if (undefined === handlerArray)    // 없다면 함수를 리턴하여 종료합니다.
+          return;
+
+        console.log("handlerArray:", handlerArray);
+        // 핸들러 배열에 등록되어있는 핸들러들을 하나씩 꺼내 전달받은 데이터와 함께 호출합니다.
+        for (var hidx = 0; hidx < handlerArray.length; hidx++) {
+          var currentHandler = handlerArray[hidx];
+          currentHandler['handler'].call(currentHandler['context'], data);
+          // 전달받은 함수를 바로 호출하지 않고 call을 사용하여 호출하는 이유는
+          // ​미리 등록시 함께 전달된 context 객체를 함수내부에서 this로 사용할 수 있게끔
+          // 함수 내부로 전달하기 위함입니다.
+          // 자바스크립트에서 this를 사용할때는 상당히 주의해야 합니다.
+        }
+      }
+    };
+
+    function Person(){}
+
+    var boss = new Person();          // 여기에 사장이 있습니다.
+    var manager = new Person();       // 팀장도 있고,
+    var programmer = new Person();    // 개발자도 있습니다.
+
+    // 서로 연관성을 한번 만들어 보겠습니다.
+
+    // 사장님이 말씀을 하십니다.
+    boss.speak = function(comment) { // 훈하 말씀을 담아서
+      console.log("boss speak:", comment);
+      observer.notify("bossSpeak", comment);    // '사장이 말한다' 이벤트를 발생시킵니다.
+    };
+
+    // 이제 사장님 이하 직원들이 이야기를 새겨 들어야겠죠?
+    manager.listen = function (comment) {
+      this.bossComment = comment;
+      console.log("manager listen:", comment);
+      // 팀장님은 팀장님 답게 사장님의 훈하말씀을 본인의 마인드에 새겨놓습니다.
+
+      // * call을 사용하여 context가 넘겨지지 않았다면 이 부분에서 this가
+      // manager를 지칭할 것이라는 보장이 없게 됩니다.(자바스크립트의 특징으로 주의해야합니다.)
+      // 그래서 notify에서 call을 사용하여 핸들러를 실행시키고
+      // 첫번째 인자인 context로 manager를 넘겨주는 것입니다.
+      // 그렇게 넘겨진 manager는 함수내에서 this에 할당되어 접근할 수 있게 됩니다.
+    };
+    observer.register("bossSpeak", manager.listen, manager);
+    // 옵저버에 등록하여 언제든 사장님의 말씀을 새겨들을 준비를 합니다.
+
+    // 자.. 그럼 우리 개발자는?
+    programmer.drop = function (comment) {    // 한귀로 듣고
+      console.log("programmer drop:", comment);
+      return comment;  // 한귀로 흘려 봅시다.
+    };
+    observer.register("bossSpeak", programmer.drop, programmer);
+    // 무념무상이 준비되었습니다.
+
+    boss.speak("... for an hour ...");    // 이제 사장님이 뭐라고 (한시간 동안)말씀을 하시면,
+    // 옵저버에 등록한 대로 자동으로
+    // manager.listen("... for an hour ...");     // 팀장님은 새겨듣고,
+    // programmer.drop("... for an hour ...");    // 개발자는 흘려 듣게 됩니다.
+  </script> -->
+
+  <script>
+    const Observer = (function(){
+      function Observer(name){
+        this.observers = [];
+      }
+      Observer.prototype = {
+        register: function(observer){
+          if(this.observers.indexOf(observer) === -1){
+            this.observers.push(observer);
+          }
+        },
+        unregister: function(observer){
+          let index = this.observers.indexOf(observer);
+          if(index > -1){
+            this.observers.splice(index, 1);
+          }
+        },
+        notify: function(message){
+          this.observers.forEach((observer)=>{
+            observer.notify(message);
+          })
+        }
+      }
+      return Observer;
+    })();
+
+    // 사용 예시 1)
+    const boss1 = {
+      notify: (msg)=>{
+        console.log('boss1:', msg);
+      }
+    }
+    const designer1 = {
+      notify: function(msg){
+        console.log('designer1:', msg);
+      }
+    }
+    const programmer1 = {
+      notify: function(msg){
+        console.log('programmer1:', msg);
+      }
+    }
+    
+    const observer1 = new Observer();
+    observer1.register(boss1);
+    observer1.register(designer1);
+    observer1.register(programmer1);
+    observer1.notify('notify');
+
+
+    // 사용 예시 2)
+    const Person = (function(){
+      function Person(name){
+        this.name = name;
+      }
+      Person.prototype = {
+        notify: function(msg){
+          console.log(this.name, ':', msg);
+        }
+      }
+      return Person;
+    })();
+
+    let boss2 = new Person('boss2');
+    let designer2 = new Person('designer2');
+    let programmer2 = new Person('programmer2');
+
+    const observer2 = new Observer();
+    observer2.register(boss2);
+    observer2.register(designer2);
+    observer2.register(programmer2);
+    observer2.notify('notify');
+
+  </script>
+</body>
+</html>
